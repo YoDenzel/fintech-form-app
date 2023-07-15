@@ -1,27 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import Navigator from 'navigation/RootNavigation';
 
 export default function App() {
-  const red = {
-    backgroundColor: 'red',
-  };
   return (
-    <View style={{ height: 100 }}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar
-        style="auto"
-        backgroundColor="green"
-        networkActivityIndicatorVisible
-      />
-    </View>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={styles.gestureRoot}>
+        <Navigator />
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gestureRoot: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
