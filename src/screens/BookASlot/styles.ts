@@ -11,7 +11,7 @@ export default StyleSheet.create({
   },
   pageTitleContainer: {
     alignItems: 'center',
-    flex: 1,
+    marginBottom: 32,
   },
   pageTitle: {
     textAlign: 'center',
