@@ -3,12 +3,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Controller, useForm } from 'react-hook-form';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { ButtonDefault } from 'components/ButtonDefault/ButtonDefault';
-import ScreenHeader from 'components/ScreenHeader/ScreenHeader';
+import { ButtonDefault } from 'components/ButtonDefault';
+import ScreenHeader from 'components/ScreenHeader';
 import { TextField } from 'components/TextField';
 import { Checkbox } from 'components/Checkbox';
 import { PhoneNumberInput } from 'components/PhoneNumberInput';
+import { RootStackParamList } from 'navigation/types';
 
 import styles from './styles';
 
@@ -16,13 +18,16 @@ const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{1,4}$/i;
 
 const namePattern = /^[-а-яА-Я]+(\s+[-а-яА-Я]+)*$/;
 
-export const BookASlot = () => {
+export function BookASlot({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'BookASlot'>) {
   const { top, bottom } = useSafeAreaInsets();
   const {
     control,
     setError,
     clearErrors,
     formState: { isDirty, isValid, errors },
+    handleSubmit,
   } = useForm({
     defaultValues: {
       name: '',
@@ -31,9 +36,13 @@ export const BookASlot = () => {
     },
   });
 
+  const onSubmit = handleSubmit((data) => {
+    console.log(data);
+    navigation.navigate('Submitted');
+  });
+
   return (
     <View style={[styles.screen, { paddingTop: top }]}>
-      <StatusBar />
       <LinearGradient
         colors={['rgba(246, 247, 250, 0.2)', 'rgba(66, 63, 255, 0.1)']}
         start={{ x: 0.1, y: 0.4 }}
@@ -133,9 +142,9 @@ export const BookASlot = () => {
         <View>
           <ButtonDefault
             text="Отправить"
-            onPress={() => undefined}
+            onPress={() => navigation.navigate('Submitted')}
             style={styles.submitButton}
-            disabled={!isDirty || !isValid}
+            // disabled={!isDirty || !isValid}
           />
           <View>
             <Checkbox checkboxText="Я даю согласие на обработку своих данных." />
@@ -144,4 +153,4 @@ export const BookASlot = () => {
       </LinearGradient>
     </View>
   );
-};
+}

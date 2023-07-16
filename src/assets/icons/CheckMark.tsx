@@ -3,7 +3,12 @@ import Svg, { Path } from 'react-native-svg';
 import { TIcon } from './types';
 
 export const CheckMark = ({ color, height = 11, width = 16, style }: TIcon) => (
-  <Svg width={width} height={height} style={style} fill="none">
+  <Svg
+    width={width}
+    height={height}
+    style={style}
+    fill="none"
+    viewBox="0 0 16 11">
     <Path
       fill={color || '#fff'}
       fillRule="evenodd"
