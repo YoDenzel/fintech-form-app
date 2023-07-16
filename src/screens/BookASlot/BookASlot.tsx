@@ -32,7 +32,7 @@ export const BookASlot = () => {
             style={styles.submitButton}
           />
           <View>
-            <Checkbox />
+            <Checkbox checkboxText="Я даю согласие на обработку своих данных." />
           </View>
         </View>
       </LinearGradient>
