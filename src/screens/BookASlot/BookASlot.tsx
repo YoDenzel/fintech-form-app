@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Controller, useForm } from 'react-hook-form';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { ButtonDefault } from 'components/ButtonDefault';
 import ScreenHeader from 'components/ScreenHeader';
@@ -13,6 +13,7 @@ import { PhoneNumberInput } from 'components/PhoneNumberInput';
 import { RootStackParamList } from 'navigation/types';
 
 import styles from './styles';
+import { useState } from 'react';
 
 const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{1,4}$/i;
 
@@ -33,12 +34,17 @@ export function BookASlot({
       name: '',
       email: '',
       phone: '',
+      policyAgreement: false,
     },
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    navigation.navigate('Submitted');
+    setIsLoading(true);
+    new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
+      setIsLoading(false);
+      navigation.navigate('Submitted');
+    });
   });
 
   return (
@@ -49,107 +55,141 @@ export function BookASlot({
         end={{ x: 1, y: 0.8 }}
         style={[styles.linearGradient, { paddingBottom: bottom + 20 }]}>
         <ScreenHeader onBack={() => undefined} />
-        <View style={{ flex: 1 }}>
-          <View style={styles.pageTitleContainer}>
-            <Text style={styles.pageTitle}>Забронировать слот</Text>
-            <Text style={styles.pageTitleDescription}>
-              Оставьте контактные данные, и мы с вами свяжемся в ближайший час.
-            </Text>
-          </View>
-          <View>
-            <Controller
-              control={control}
-              name="name"
-              rules={{
-                minLength: 3,
-                maxLength: 10,
-                pattern: namePattern,
-                required: true,
-              }}
-              render={({
-                field: { onChange, value },
-                fieldState: { isDirty: isFieldDirty, error },
-              }) => (
-                <TextField
-                  fieldName="Имя"
-                  maxLength={10}
-                  onChange={(v) => {
-                    if (v.length < 3 || !namePattern.test(v)) {
-                      setError('name', {
-                        message: 'Введите корректное имя',
-                      });
-                    } else {
-                      clearErrors('name');
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.contentContainer}>
+            <View style={styles.pageTitleContainer}>
+              <Text style={styles.pageTitle}>Забронировать слот</Text>
+              <Text style={styles.pageTitleDescription}>
+                Оставьте контактные данные, и мы с вами свяжемся в ближайший
+                час.
+              </Text>
+            </View>
+            <View>
+              <Controller
+                control={control}
+                name="name"
+                rules={{
+                  minLength: 3,
+                  maxLength: 10,
+                  pattern: namePattern,
+                  required: true,
+                }}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { isDirty: isFieldDirty, error },
+                }) => (
+                  <TextField
+                    fieldName="Имя"
+                    maxLength={10}
+                    onChange={(v) => {
+                      if (v.length < 3 || !namePattern.test(v)) {
+                        setError('name', {
+                          message: 'Введите корректное имя',
+                        });
+                      } else {
+                        clearErrors('name');
+                      }
+                      onChange(v);
+                    }}
+                    value={value}
+                    error={
+                      error?.message && isFieldDirty ? error.message : undefined
                     }
-                    onChange(v);
-                  }}
-                  value={value}
-                  error={
-                    error?.message && isFieldDirty ? error.message : undefined
-                  }
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="email"
-              rules={{
-                minLength: 10,
-                maxLength: 30,
-                pattern: emailPattern,
-                required: true,
-              }}
-              render={({
-                field: { onChange, value },
-                fieldState: { isDirty: isFieldDirty, error },
-              }) => (
-                <TextField
-                  fieldName="Email"
-                  onChange={(v) => {
-                    if (v.length < 10 || !emailPattern.test(v)) {
-                      setError('email', {
-                        message: 'Введите корректный e-mail',
-                      });
-                    } else {
-                      clearErrors('email');
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="email"
+                rules={{
+                  minLength: 10,
+                  maxLength: 30,
+                  pattern: emailPattern,
+                  required: true,
+                }}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { isDirty: isFieldDirty, error },
+                }) => (
+                  <TextField
+                    fieldName="Email"
+                    onChange={(v) => {
+                      if (v.length < 10 || !emailPattern.test(v)) {
+                        setError('email', {
+                          message: 'Введите корректный e-mail',
+                        });
+                      } else {
+                        clearErrors('email');
+                      }
+                      onChange(v);
+                    }}
+                    value={value}
+                    error={
+                      isFieldDirty && error?.message ? error.message : undefined
                     }
-                    onChange(v);
-                  }}
-                  value={value}
-                  error={
-                    isFieldDirty && error?.message ? error.message : undefined
-                  }
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="phone"
-              render={({
-                field: { onChange, value },
-                fieldState: { isDirty },
-              }) => (
-                <PhoneNumberInput
-                  value={value}
-                  onChange={onChange}
-                  placeholder="Номер телефона"
-                  showCountryCode={isDirty}
-                />
-              )}
-            />
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="phone"
+                rules={{
+                  minLength: 11,
+                  maxLength: 20,
+                  required: true,
+                }}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { isDirty, error },
+                }) => (
+                  <PhoneNumberInput
+                    value={value}
+                    onChange={(v) => {
+                      if (v.length < 11) {
+                        setError('phone', {
+                          message: 'Введите корректный номер телефона',
+                        });
+                      } else {
+                        clearErrors('phone');
+                      }
+                      onChange(v);
+                    }}
+                    maxLength={20}
+                    placeholder="Номер телефона"
+                    showCountryCode={isDirty}
+                    mask={'(999) 999-99-99-99-9'}
+                    error={error?.message}
+                  />
+                )}
+              />
+            </View>
           </View>
-        </View>
-        <View>
-          <ButtonDefault
-            text="Отправить"
-            onPress={() => navigation.navigate('Submitted')}
-            style={styles.submitButton}
-            // disabled={!isDirty || !isValid}
-          />
-          <View>
-            <Checkbox checkboxText="Я даю согласие на обработку своих данных." />
+          <View style={styles.submitButtonContainer}>
+            <ButtonDefault
+              text="Отправить"
+              onPress={handleSubmit(onSubmit)}
+              style={styles.submitButton}
+              submitting={isLoading}
+              disabled={!isDirty || !isValid}
+            />
+            <View>
+              <Controller
+                name="policyAgreement"
+                rules={{ required: true }}
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <Checkbox
+                    checkboxText="Я даю согласие на обработку своих данных."
+                    onChecked={onChange}
+                  />
+                )}
+              />
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </LinearGradient>
     </View>
   );

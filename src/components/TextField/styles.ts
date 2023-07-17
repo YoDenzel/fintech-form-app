@@ -14,12 +14,16 @@ export default StyleSheet.create({
     paddingLeft: 12,
     marginBottom: 8,
   },
+  inputFocused: {
+    borderColor: '#413DFF',
+    borderWidth: 1,
+  },
   contError: {
     borderBottomColor: '#C32336',
   },
   fieldName: {
     position: 'absolute',
-    top: 16,
+    top: 12,
     color: '#60626D',
     left: 12,
     fontFamily: 'Raleway_500Medium',

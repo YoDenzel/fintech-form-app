@@ -9,6 +9,10 @@ export default StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+  scrollViewContainer: { flexGrow: 1 },
+  contentContainer: {
+    flex: 1,
+  },
   pageTitleContainer: {
     alignItems: 'center',
     marginBottom: 32,
@@ -27,6 +31,9 @@ export default StyleSheet.create({
     fontSize: 15,
     lineHeight: 21,
     color: '#60626D',
+  },
+  submitButtonContainer: {
+    zIndex: -1,
   },
   submitButton: {
     marginBottom: 10,

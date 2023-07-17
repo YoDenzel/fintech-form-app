@@ -9,8 +9,11 @@ import {
   ViewStyle,
   NativeSyntheticEvent,
   TextInputFocusEventData,
+  Keyboard,
 } from 'react-native';
 import Animated, {
+  interpolate,
+  interpolateColor,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
@@ -18,37 +21,46 @@ import {
   formatIncompletePhoneNumber,
   parseIncompletePhoneNumber,
 } from 'libphonenumber-js';
-import MaskInput from 'react-native-mask-input';
+import { MaskedTextInput } from 'react-native-mask-text';
+
+import { PhoneCountriesDropdown } from 'components/PhoneCountriesDropdown';
 
 import styles from './styles';
 
 export const PhoneNumberInput = ({
   placeholder,
-  showErrorBox = true,
   onChange,
   value,
   onBlur,
-  errorMsg,
   maxLength,
   showCountryCode,
+  error,
+  mask,
 }: TPhoneField) => {
   const [visibleCountries, setVisibleCountries] = useState(false);
-  const [country, setCountry] = useState(7);
+  const [country, setCountry] = useState('7');
+  const [focused, setFocused] = useState(false);
 
-  const errorOpacityStyle = useAnimatedStyle(() => {
+  const fieldNameStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(value || focused ? 0 : 1, [0, 1], [-12, 0]);
+    const fontSize = interpolate(value || focused ? 0 : 1, [0, 1], [12, 20]);
+    const color = interpolateColor(
+      value || focused ? 0 : 1,
+      [0, 1],
+      ['#60626D', '#1E1E20'],
+    );
     return {
-      opacity: withTiming(errorMsg ? 1 : 0),
-    } as ViewStyle;
-  }, [errorMsg]);
+      transform: [{ translateY: withTiming(translateY) }],
+      fontSize: withTiming(fontSize),
+      color: withTiming(color),
+    };
+  });
 
   const handleChangePhone =
     (onChangeText?: (phone: string) => void) => (phone: string) => {
       if (phone) {
         const formatNumber = formatIncompletePhoneNumber(
-          parseIncompletePhoneNumber(phone).replace(
-            phone,
-            `+${country}${phone}`,
-          ),
+          parseIncompletePhoneNumber(phone).replace(phone, `${phone}`),
         );
 
         if (formatNumber === `+${country}`) {
@@ -62,65 +74,93 @@ export const PhoneNumberInput = ({
     };
 
   const onShowCountries = () => {
-    setVisibleCountries(true);
+    setVisibleCountries((value) => !value);
+    Keyboard.dismiss();
   };
 
-  const onChangeCountry = (country: number) => {
+  const onChangeCountry = (country: string) => {
     setCountry(country);
     setVisibleCountries(false);
   };
 
-  const onCloseCountries = () => {
-    setVisibleCountries(false);
-  };
+  const contStyle = useAnimatedStyle(() => {
+    let style;
+    if (error) {
+      style = {
+        borderColor: '#FF450B',
+        borderWidth: 1,
+      };
+    } else if (focused) {
+      style = {
+        borderColor: '#3F8AE0',
+        borderWidth: 1,
+      };
+    } else {
+      style = {
+        borderWidth: 0,
+      };
+    }
+    return {
+      ...style,
+    };
+  });
 
   return (
-    <View style={styles.constainer}>
-      <View style={[styles.body, errorMsg ? styles.bodyError : null]}>
+    <View style={styles.container}>
+      <View style={[styles.body]}>
         {showCountryCode && (
-          <TouchableOpacity
-            onPress={onShowCountries}
-            style={[styles.containerRegion]}>
-            <Text style={styles.regionTitle}>+{country}</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              onPress={onShowCountries}
+              style={[styles.containerRegion]}>
+              <Text style={styles.regionTitle}>+{country}</Text>
+            </TouchableOpacity>
+            <PhoneCountriesDropdown
+              visibleCountries={visibleCountries}
+              onChangeCountry={onChangeCountry}
+            />
+          </>
         )}
-        <View style={styles.inputWrap}>
-          <MaskInput
+        <Animated.View
+          style={[
+            styles.inputWrap,
+            contStyle,
+            !showCountryCode && styles.inputRightBorder,
+          ]}>
+          {!showCountryCode && (
+            <Animated.Text style={[styles.fieldName, fieldNameStyle]}>
+              {placeholder}
+            </Animated.Text>
+          )}
+          <MaskedTextInput
             style={styles.input}
             returnKeyType="send"
             value={value}
-            placeholder={placeholder}
             keyboardType="phone-pad"
             onChangeText={handleChangePhone(onChange)}
-            onBlur={onBlur}
+            onBlur={(e) => {
+              setFocused(false);
+              onBlur && onBlur(e);
+            }}
             maxLength={maxLength}
-            placeholderTextColor="#1E1E20"
+            onFocus={() => setFocused(true)}
+            mask={mask}
           />
-        </View>
+        </Animated.View>
       </View>
-      {showErrorBox && (
-        <View style={styles.errorWrap}>
-          {errorMsg && (
-            <View style={styles.errorTextWrap}>
-              <Animated.Text style={[styles.errorText, errorOpacityStyle]}>
-                {errorMsg}
-              </Animated.Text>
-            </View>
-          )}
-        </View>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
 
 type TPhoneField = {
   placeholder?: string;
-  showErrorBox?: boolean;
   style?: StyleProp<TextStyle>;
   value: string;
   onChange: (...event: any[]) => void;
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
-  errorMsg?: string;
   maxLength?: number;
   showCountryCode?: boolean;
+  error?: string;
+  mask?: string;
 };

@@ -1,7 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  constainer: {},
+  container: {
+    marginBottom: 12,
+  },
   body: {
     flexDirection: 'row',
     width: '100%',
@@ -12,16 +14,17 @@ export default StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
   },
-  bodyError: {
-    borderColor: '#C32336',
+  inputRightBorder: {
+    borderRadius: 12,
   },
   containerRegion: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
     borderRightColor: '#F6F7FA',
     borderRightWidth: 4,
     height: '100%',
+    width: 70,
   },
   regionTitle: {
     fontSize: 15,
@@ -31,8 +34,11 @@ export default StyleSheet.create({
   },
   inputWrap: {
     flex: 1,
-    minWidth: 200,
     position: 'relative',
+    height: 55,
+    justifyContent: 'center',
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
   },
   input: {
     paddingHorizontal: 12,
@@ -51,17 +57,26 @@ export default StyleSheet.create({
     position: 'absolute',
     right: 0,
   },
-  errorWrap: {
-    minHeight: 20 * 1.5,
-  },
   errorTextWrap: {
     marginTop: 5,
     alignItems: 'flex-start',
+    marginBottom: 12,
   },
   errorText: {
-    color: '#C32336',
-    fontSize: 11,
-    lineHeight: 13,
-    fontWeight: '400',
+    color: '#FF450B',
+    fontFamily: 'Raleway_400Regular',
+    fontSize: 13,
+    lineHeight: 18,
+    alignSelf: 'flex-start',
+    marginLeft: 12,
+    marginBottom: 8,
+    zIndex: -1,
+  },
+  fieldName: {
+    position: 'absolute',
+    top: 12,
+    color: '#60626D',
+    left: 12,
+    fontFamily: 'Raleway_500Medium',
   },
 });

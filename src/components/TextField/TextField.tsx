@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, TextInput } from 'react-native';
+import { StyleProp, Text, TextInput, ViewStyle } from 'react-native';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -42,9 +42,24 @@ export const TextField = ({
   });
 
   const contStyle = useAnimatedStyle(() => {
+    let style;
+    if (error) {
+      style = {
+        borderColor: '#FF450B',
+        borderWidth: 1,
+      };
+    } else if (focused) {
+      style = {
+        borderColor: '#3F8AE0',
+        borderWidth: 1,
+      };
+    } else {
+      style = {
+        borderWidth: 0,
+      };
+    }
     return {
-      borderColor: '#FF450B',
-      borderWidth: error ? 1 : 0,
+      ...style,
     };
   });
 
