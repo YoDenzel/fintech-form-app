@@ -17,7 +17,6 @@
     "@shopify/flash-list": "1.4.3",
     "@types/react": "^18.2.15",
     "@types/react-native": "^0.72.2",
-    "countries-list": "^2.6.1",
     "country-codes-list": "^1.6.11",
     "expo": "^49.0.3",
     "expo-font": "~11.4.0",
